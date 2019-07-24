@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-
-  <link rel="stylesheet" href="styles.css">
-
-<title>Map Wars</title>
-</head>
-<body>
-
-<script>
-  
-  const refineryEndpointUrl = 'https://qzpe8v6zy0.execute-api.us-west-2.amazonaws.com/refinery/replaceme/featherdeathweed';
+const refineryEndpointUrl = 'https://qzpe8v6zy0.execute-api.us-west-2.amazonaws.com/refinery/replaceme/featherdeathweed';
 
 async function makeRefineryRequest() {
   const response = await fetch(refineryEndpointUrl);
@@ -34,37 +22,3 @@ document.querySelector('.my-favorite-button').onclick = async function buttonCli
   
   contentContainer.appendChild(contentElement);
 }
-</script>
-
-<div class="center-content container">
-  <div class="mt-2 mb-2 pt-2">
-    <button class="col-md-12 btn btn-primary my-favorite-button">
-      Click Me, Yo!
-    </button>
-    <div class="button-clicked-content mt-2">
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

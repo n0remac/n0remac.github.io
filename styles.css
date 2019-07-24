@@ -1,0 +1,23 @@
+.center-content {
+  background-color: #ddd;
+  width: 200px;
+  min-height: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.my-favorite-button {
+  
+}
+
+.button-clicked-content {
+  text-align: center;
+}
+
+.button-clicked-content div {
+  background-color: red;
+  width: 140px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 4px;
+}
