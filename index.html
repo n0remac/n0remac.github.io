@@ -6,12 +6,16 @@
 <title>Map Wars</title>
 </head>
 <body>
+  <p id="display" style="text-align:right;" >Countries<p>
 
-  <img src="https://map-refinery.s3-us-west-2.amazonaws.com/Europe.gif" onclick="getImageCoords(event,this);">
+  <img src="https://map-refinery.s3-us-west-2.amazonaws.com/EuropeNames.gif" onclick="getImageCoords(event,this);">
 
   <p id="coords" >Coordinates: (0,0)</p> Country:<input type="text" id="countryName" size="20" name="fname"><br>
   
   <button onclick="setCountry()">Submit</button>
+
+
+  
 
 
 
@@ -19,10 +23,11 @@
 </body>
 
 <script>
+var display="";
 var posX=0
 var posY=0
 var mapPoints = []; // create an empty array
-  
+
 
   function getImageCoords(event,img) {
         
@@ -31,16 +36,20 @@ var mapPoints = []; // create an empty array
         document.getElementById("coords").innerHTML = "Coordinates: ".concat(posX,", ", posY);    
     }
 
-    function setCountry(){
+  function setCountry(){
         var countryName = document.getElementById("countryName").value;
         mapPoints.push({
                 key:   countryName,
                 value: [posX, posY]});
-
         var dictstring = JSON.stringify(mapPoints);
-        return false;    
+
+        
+        display=display.concat(countryName+": "+posX+", "+posY+"<br>")
+
+        document.getElementById("display").innerHTML = display;
+      
    }
-  
+
 </script>
 
 </html>
