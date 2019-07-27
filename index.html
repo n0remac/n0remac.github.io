@@ -2,14 +2,51 @@
 <html>
 <head>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.css" />
 
 <title>Map Wars</title>
 </head>
 <body>
 
+  <img src="https://map-refinery.s3-us-west-2.amazonaws.com/Europe.gif" onclick="getImageCoords(event,this);">
+
+  <p id="coords" >Coordinates: (0,0)</p> Country:<input type="text" id="countryName" size="20" name="fname"><br>
+  
+  <button onclick="setCountry()">Submit</button>
 
 
+
+
+</body>
+
+<script>
+var posX=0
+var posY=0
+var mapPoints = []; // create an empty array
+  
+
+  function getImageCoords(event,img) {
+        
+        posX = event.offsetX?(event.offsetX):event.pageX-img.offsetLeft;
+        posY = event.offsetY?(event.offsetY):event.pageY-img.offsetTop;
+        document.getElementById("coords").innerHTML = "Coordinates: ".concat(posX,", ", posY);    
+    }
+
+    function setCountry(){
+        var countryName = document.getElementById("countryName").value;
+        mapPoints.push({
+                key:   countryName,
+                value: [posX, posY]});
+
+        var dictstring = JSON.stringify(mapPoints);
+        return false;    
+   }
+  
+</script>
+
+</html>
+
+
+<!--
 <div class="center-content container">
   <div class="mt-2 mb-2 pt-2">
     <button class="col-md-12 btn btn-primary my-favorite-button">
@@ -20,11 +57,13 @@
   </div>
 </div>
 
-</body>
 
-<script>
-  
-  const refineryEndpointUrl = 'https://qzpe8v6zy0.execute-api.us-west-2.amazonaws.com/refinery/replaceme/featherdeathweed';
+
+
+
+js
+
+const refineryEndpointUrl = 'https://cp65b6oel9.execute-api.us-west-2.amazonaws.com/refinery/getjson';
 
 async function makeRefineryRequest() {
   const response = await fetch(refineryEndpointUrl);
@@ -48,13 +87,7 @@ document.querySelector('.my-favorite-button').onclick = async function buttonCli
   
   contentContainer.appendChild(contentElement);
 }
-</script>
-
-</html>
-
-
-
-
+-->
 
 
 
