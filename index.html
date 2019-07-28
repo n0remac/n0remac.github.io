@@ -16,7 +16,15 @@
 
 
   
-
+  <div class="center-content container">
+    <div class="mt-2 mb-2 pt-2">
+      <button class="col-md-12 btn btn-primary my-favorite-button">
+        Click Me, Yo!
+      </button>
+      <div class="button-clicked-content mt-2">
+      </div>
+    </div>
+  </div>
 
 
 
@@ -24,9 +32,18 @@
 
 <script>
 var display="";
-var posX=0
-var posY=0
+var posX=0;
+var posY=0;
 var mapPoints = []; // create an empty array
+
+
+  
+
+
+
+
+
+
 
 
   function getImageCoords(event,img) {
@@ -44,11 +61,68 @@ var mapPoints = []; // create an empty array
         var dictstring = JSON.stringify(mapPoints);
 
         
-        display=display.concat(countryName+": "+posX+", "+posY+"<br>")
+        display=display.concat(countryName+": "+posX+", "+posY+"<br>");
+
+
+        makeRequest(display);
 
         document.getElementById("display").innerHTML = display;
       
    }
+
+
+
+
+  const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/mapImage';
+
+  async function makeRefineryRequest() {
+    const response = await fetch(refineryEndpointUrl);
+    
+    return response.json();
+  } 
+
+  let count = 1;
+
+  document.querySelector('.my-favorite-button').onclick = async function buttonClicked() {
+    const contentContainer = document.querySelector('.button-clicked-content');
+    
+    const responseContent = await makeRefineryRequest();
+    
+    console.log(responseContent);
+    
+    const contentElement = document.createElement('div');
+    
+    contentElement.innerText = responseContent.yo + ' #' + count;
+    count++;
+    
+    contentContainer.appendChild(contentElement);
+  }
+
+
+  async function makeRequest(coords) {
+
+    let json = {
+      json: JSON.stringify(coords),
+      delay: 3
+    };
+
+    try {
+      let response = await fetch('https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/replaceme/tundrastingerreaper', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        },
+        body: 'json=' + encodeURIComponent(JSON.stringify(json.json)) + '&delay=' + json.delay
+      });
+
+      const responseJson = response.json();
+
+      alert(responseJson);
+    } catch (e) {
+      console.log('request failed', e);
+    }
+  }
 
 </script>
 
