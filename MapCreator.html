@@ -74,6 +74,50 @@ const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.
   Named map
   https://map-refinery.s3-us-west-2.amazonaws.com/EuropeNames.gif
 
+  <button onclick="fetchGetTest()">fetchGetTest</button>
+
+
+
+<div class="center-content container">
+  <div class="mt-2 mb-2 pt-2">
+    <button class="col-md-12 btn btn-primary my-favorite-button">
+      Click Me, Yo!
+    </button>
+    <div class="button-clicked-content mt-2">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+js
+
+const refineryEndpointUrl = 'https://cp65b6oel9.execute-api.us-west-2.amazonaws.com/refinery/getjson';
+
+async function makeRefineryRequest() {
+  const response = await fetch(refineryEndpointUrl);
+  
+  return response.json();
+}
+
+let count = 1;
+
+document.querySelector('.my-favorite-button').onclick = async function buttonClicked() {
+  const contentContainer = document.querySelector('.button-clicked-content');
+  
+  const responseContent = await makeRefineryRequest();
+  
+  console.log(responseContent);
+  
+  const contentElement = document.createElement('div');
+  
+  contentElement.innerText = responseContent.yo + ' #' + count;
+  count++;
+  
+  contentContainer.appendChild(contentElement);
+}
 -->
 
 
