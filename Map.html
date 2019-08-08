@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
 
-
-  </style>
 
 <title>Map Wars</title>
 </head>
 <body onload="fetchGet();">
-
-
 
   <img id="image" src="https://map-refinery.s3-us-west-2.amazonaws.com/Europe.gif" onclick="fillCountry(event,this);">
 
@@ -47,7 +42,7 @@ const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.
   async function fetchGet() {
     const response = await fetch(refineryEndpointUrl);
     const data = await response.json();
-    await document.getElementById("image").src = data;
+    document.getElementById("image").src = data;
   }
 
 
@@ -59,17 +54,20 @@ const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.
 
 
 <!--
-  <div class = "info">
-    Countries:
-    <p id="countries" ></p>
-  </div>
-
-      div.info{
+  <style>
+    div.info{
         position: absolute;
         right: 400px;
         width: 100px;
         height: 120px;
     }
+
+  </style>
+
+  <div class = "info">
+    Countries:
+    <p id="countries" ></p>
+  </div>
 
   blank  map
   https://map-refinery.s3-us-west-2.amazonaws.com/Europe.gif
