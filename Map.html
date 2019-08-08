@@ -2,12 +2,7 @@
 <html>
 <head>
   <style>
-    div.info{
-        position: absolute;
-        right: 400px;
-        width: 100px;
-        height: 120px;
-    }
+
 
   </style>
 
@@ -15,10 +10,7 @@
 </head>
 <body onload="fetchGet();">
 
-  <div class = "info">
-    Countries:
-    <p id="countries" ></p>
-  </div>
+
 
   <img id="image" src="https://map-refinery.s3-us-west-2.amazonaws.com/Europe.gif" onclick="fillCountry(event,this);">
 
@@ -55,7 +47,7 @@ const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.
   async function fetchGet() {
     const response = await fetch(refineryEndpointUrl);
     const data = await response.json();
-    document.getElementById("image").src = data;
+    await document.getElementById("image").src = data;
   }
 
 
@@ -67,6 +59,18 @@ const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.
 
 
 <!--
+  <div class = "info">
+    Countries:
+    <p id="countries" ></p>
+  </div>
+
+      div.info{
+        position: absolute;
+        right: 400px;
+        width: 100px;
+        height: 120px;
+    }
+
   blank  map
   https://map-refinery.s3-us-west-2.amazonaws.com/Europe.gif
 
