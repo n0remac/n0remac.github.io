@@ -5,7 +5,7 @@
 
 <title>Map Wars</title>
 </head>
-<body onload="fetchGet();">
+<body class = "head" onload="fetchGet();" >
 
   <img id="image" src="https://map-refinery.s3-us-west-2.amazonaws.com/Europe.gif" onclick="fillCountry(event,this);">
 
@@ -19,32 +19,44 @@ var mapPoints = []; // create an empty array
 const url = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/replaceme/tundrastingerreaper'
 const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/mapImage';  
 
-  function fillCountry(event, img) {
+  async function fillCountry(event, img) {
         posX = event.offsetX?(event.offsetX):event.pageX-img.offsetLeft;
         posY = event.offsetY?(event.offsetY):event.pageY-img.offsetTop; 
-        fetchPost([posX, posY])   
-        fetchGet()
+        data = await fetchPost([posX, posY],url)   
+        document.getElementById("image").src = data;
         
     }
 
 
-  async function fetchPost(data) {
+  function fetchPost(data, url) {
+    return fetch(url, {  
+      method: 'POST',  
+      cors: true,
+      body: JSON.stringify(
+        data
+      )
+    }).then(response => response.json());   
+  }
+
+
+
+  async function fetchPostOld(data) {
     await fetch(url, {  
       method: 'POST',  
       cors: true,
       body: JSON.stringify(
         data
       )
-    })   
+    }) 
   }
 
   
   async function fetchGet() {
     const response = await fetch(refineryEndpointUrl);
     const data = await response.json();
+    console.log(data)
     document.getElementById("image").src = data;
   }
-
 
   
 

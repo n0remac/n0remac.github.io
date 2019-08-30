@@ -2,16 +2,22 @@
 <html>
 <head>
 
+ <link rel="stylesheet" href="styles.css">
+
 
 <title>Map Wars</title>
 </head>
-<body>
+<body class="head">
 
-  <img src="https://map-refinery.s3-us-west-2.amazonaws.com/EuropeNames.gif" onclick="getImageCoords(event,this);">
+  <canvas class="engine" id="engine" oncontextmenu="event.preventDefault()" width="1055" height="984" style="cursor: default;"></canvas>
 
-  <p id="coords" >Coordinates: (0,0)</p> Country:<input type="text" id="countryName" size="20" name="fname"><br>
+  <div _ngcontent-c2="" class="launcher-1" style="pointer-events: none"><button _ngcontent-c2="" class="launcher-button" onclick="location.href = 'file:///home/cameron/Projects/SamuraiWars/GitHubPages/n0remac.github.io/Map.html';">Create Map</button></div>
 
-  <button onclick="setCountry()">Submit</button>
+  <div _ngcontent-c2="" class="launcher-2" style="pointer-events: none"><button _ngcontent-c2="" class="launcher-button" onclick="location.href = 'file:///home/cameron/Projects/SamuraiWars/GitHubPages/n0remac.github.io/Map.html';">Play</button></div>
+
+
+
+
 
 
 
@@ -26,12 +32,6 @@ var mapPoints = []; // create an empty array
 const url = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/replaceme/tundrastingerreaper'
 const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/mapImage';  
 
-  function getImageCoords(event,img) {
-        posX = event.offsetX?(event.offsetX):event.pageX-img.offsetLeft;
-        posY = event.offsetY?(event.offsetY):event.pageY-img.offsetTop;
-        document.getElementById("coords").innerHTML = "Coordinates: ".concat(posX,", ", posY);    
-    }
-
   function setCountry(){
         var countryName = document.getElementById("countryName").value;
         mapPoints.push([countryName, posX, posY]);
@@ -41,22 +41,6 @@ const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.
 
 
 
-  function fetchPost(data) {
-    fetch(url, {  
-      method: 'POST',  
-      cors: true,
-      body: JSON.stringify(
-        data
-      )
-    })   
-  }
-
-  
-  async function fetchGetTest() {
-    const response = await fetch(refineryEndpointUrl);
-    const data = await response.json();
-    console.log(data);
-  }
 
 
   
