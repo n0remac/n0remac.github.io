@@ -5,61 +5,43 @@
 
 <title>Map Wars</title>
 </head>
-<body class = "head" onload="fetchGet();" >
+<body class = "head" onload="" >
 
-  <img id="image" src="https://map-refinery.s3-us-west-2.amazonaws.com/Europe.gif" onclick="fillCountry(event,this);">
+  <img id="image" src='https://map-refinery.s3-us-west-2.amazonaws.com/Europe.gif' onclick="fillCountry(event,this);">
+  <button onclick="reset()">Reset</button>
 
 </body>
 
 <script>
-var display="";
-var posX=0;
-var posY=0;
-var mapPoints = []; // create an empty array
-const url = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/replaceme/tundrastingerreaper'
-const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/mapImage';  
+  var display="";
+  var posX=0;
+  var posY=0;
+  var mapPoints = []; // create an empty array
+  const url = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/ModifyMap';
+  
+  function reset(){
+    fetchPost('reset', url)   
+      .then(data => document.getElementById('image').src = data);  
+  }
 
-  async function fillCountry(event, img) {
-        posX = event.offsetX?(event.offsetX):event.pageX-img.offsetLeft;
-        posY = event.offsetY?(event.offsetY):event.pageY-img.offsetTop; 
-        data = await fetchPost([posX, posY],url)   
-        document.getElementById("image").src = data;
-        
-    }
+  function fillCountry(event, img){
+    posX = event.offsetX?(event.offsetX):event.pageX-img.offsetLeft;
+    posY = event.offsetY?(event.offsetY):event.pageY-img.offsetTop;
+    console.log("test")
+    data = fetchPost([posX, posY],url)
+      .then(data => document.getElementById('image').src = data);
+  }
 
 
   function fetchPost(data, url) {
     return fetch(url, {  
-      method: 'POST',  
+      method: "POST",  
       cors: true,
       body: JSON.stringify(
         data
       )
     }).then(response => response.json());   
   }
-
-
-
-  async function fetchPostOld(data) {
-    await fetch(url, {  
-      method: 'POST',  
-      cors: true,
-      body: JSON.stringify(
-        data
-      )
-    }) 
-  }
-
-  
-  async function fetchGet() {
-    const response = await fetch(refineryEndpointUrl);
-    const data = await response.json();
-    console.log(data)
-    document.getElementById("image").src = data;
-  }
-
-  
-
 </script>
 
 </html>
