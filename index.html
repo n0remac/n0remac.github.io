@@ -1,77 +1,191 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
 
- <link rel="stylesheet" href="styles.css">
-
-
-<title>Map Wars</title>
-</head>
-<body class="head">
-
-  <canvas class="engine" id="engine" oncontextmenu="event.preventDefault()" width="1055" height="984" style="cursor: default;"></canvas>
-
-  <div _ngcontent-c2="" class="launcher-1" style="pointer-events: none"><button _ngcontent-c2="" class="launcher-button" onclick="location.href = 'file:///home/cameron/Projects/SamuraiWars/GitHubPages/n0remac.github.io/Map.html';">Create Map</button></div>
-
-  <div _ngcontent-c2="" class="launcher-2" style="pointer-events: none"><button _ngcontent-c2="" class="launcher-button" onclick="location.href = 'file:///home/cameron/Projects/SamuraiWars/GitHubPages/n0remac.github.io/Map.html';">Play</button></div>
+    
+  </head>
+  <body>
+    <p id ="keys_pressed"></p>
 
 
 
+    <div class = 'forward_button'>
+      <button onclick= "forward()" class="button" id="foward">↑</button>
+    </div>
 
+    <button onclick= "left()" class="button" id="left">←</button>
+    <button onclick= "backwards()" class="button" id="backwards">↓</button>
+    <button onclick= "right()" class="button" id="right">→</button>
+    
 
+  </body>
+  <script  type="text/javascript">
+    
+    document.addEventListener('keydown', keyDownHandler, false);
+    document.addEventListener('keyup', keyUpHandler, false);
 
-
-</body>
-
-<script>
-var display="";
-var posX=0;
-var posY=0;
-var mapPoints = []; // create an empty array
-
-const url = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/replaceme/tundrastingerreaper'
-const refineryEndpointUrl = 'https://9nxm1uir3d.execute-api.us-west-2.amazonaws.com/refinery/mapImage';  
-
-  function setCountry(){
-        var countryName = document.getElementById("countryName").value;
-        mapPoints.push([countryName, posX, posY]);
-
-        fetchPost(mapPoints);
-   }
+    var rightPressed = false;
+    var leftPressed = false;
+    var upPressed = false;
+    var downPressed = false;
 
 
 
 
 
-  
 
-</script>
 
+      function forward(){
+        url =  '/Forward';
+        data =  fetchPost(url, {"direction": "n"})
+            .then(data => document.getElementById("keys_pressed").innerHTML = JSON.stringify(data))
+            .catch(error => console.error(error));
+      }  
+
+      function left(){
+        url =  '/Left';
+        data =  fetchPost(url, {"direction": "w"})
+            .then(data => document.getElementById("keys_pressed").innerHTML = JSON.stringify(data))
+            .catch(error => console.error(error));
+      }  
+
+      function right(){
+        url =  '/Right';
+        data =  fetchPost(url, {"direction": "e"})
+            .then(data => document.getElementById("keys_pressed").innerHTML = JSON.stringify(data))
+            .catch(error => console.error(error));
+      }  
+
+      function backwards(){
+        url =  '/Backwards';
+        data =  fetchPost(url, {"direction": "s"})
+            .then(data => document.getElementById("keys_pressed").innerHTML = JSON.stringify(data))
+            .catch(error => console.error(error));
+      }  
+
+
+      function EndForward(){
+        url =  '/EndForward';
+        data =  fetchPost(url, {"direction": "n"})
+            .then(data => document.getElementById("keys_pressed").innerHTML = JSON.stringify(data))
+            .catch(error => console.error(error));
+      }  
+
+      function EndLeft(){
+        url =  '/EndLeft';
+        data =  fetchPost(url, {"direction": "w"})
+            .then(data => document.getElementById("keys_pressed").innerHTML = JSON.stringify(data))
+            .catch(error => console.error(error));
+      }  
+
+      function EndRight(){
+        url =  '/EndRight';
+        data =  fetchPost(url, {"direction": "e"})
+            .then(data => document.getElementById("keys_pressed").innerHTML = JSON.stringify(data))
+            .catch(error => console.error(error));
+      }  
+
+      function EndBackwards(){
+        url =  '/EndBackwards';
+        data =  fetchPost(url, {"direction": "s"})
+            .then(data => document.getElementById("keys_pressed").innerHTML = JSON.stringify(data))
+            .catch(error => console.error(error));
+      }
+
+      function fetchPost(url, data) {
+        return fetch(url, {  
+          method: 'POST',  
+          cors: true,
+          body: JSON.stringify(
+            data
+          )
+        }).then(response => response.text());   
+      }
+
+
+
+
+    function keyDownHandler(event) {
+        if(event.keyCode == 39) {
+            rightPressed = true;
+            right();
+        }
+        else if(event.keyCode == 37) {
+            leftPressed = true;
+            left();
+        }
+        if(event.keyCode == 40) {
+            downPressed = true;
+            backwards();
+        }
+        else if(event.keyCode == 38) {
+            upPressed = true;
+            forward();
+        }
+    }
+
+    function keyUpHandler(event) {
+        if(event.keyCode == 39) {
+            rightPressed = false;
+            EndRight()
+        }
+        else if(event.keyCode == 37) {
+            leftPressed = false;
+            EndLeft()
+        }
+        if(event.keyCode == 40) {
+            downPressed = false;
+            EndBackwards()
+        }
+        else if(event.keyCode == 38) {
+            upPressed = false;
+            EndForward()
+        }
+    }
+
+
+
+  </script>
+
+    <style>
+      .forward_button{
+        margin-left: 79px;
+        margin-bottom: 10px; 
+      }
+      .button {
+        padding: 15px 25px;
+        font-size: 24px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: #fff;
+        background-color: #d3d3d3;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #999;
+      }
+
+      .button:hover {background-color: #d3d3d3}
+
+      .button:active {
+        background-color: #d3d3d3;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+      }
+    </style>
 </html>
-
 
 <!--
 
-  game map
-  https://map-refinery.s3-us-west-2.amazonaws.com/EuropeGameMap.gif
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
-  Named map
-  https://map-refinery.s3-us-west-2.amazonaws.com/EuropeNames.gif
-
+$(document).ready(function() {
+        console.log("===============================================================================")
+        $("#foward").click(function(e) {
+          $.post("/generator", {"direction": "n"})
+           .done(function(string) {
+          });
+          e.preventDefault();
+        });
+      });
 -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
