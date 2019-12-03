@@ -5,72 +5,54 @@
       <link rel="stylesheet" type="text/css" href="CardGame.css">
    </head>
    <body class = "head" onload="getCards()">
-<div id="field">
-
- <div id="cardTemp" class="card" style="left: 0px; width: 315px; height: 440px; top: 0px;"></div>      
-
-
-
-</div>
-  <div id="execute" class = "execute">
-     <h1>
-     Execution:
-     </h1>
-     <input type="submit" value="Submit" onclick="submitGlobalVariable()">
-    <div id="output">
+    <div id="field">
+       <div id="cardTemp" class="card" style="left: 0px; width: 315px; height: 440px; top: 0px;"></div>
+    </div>
+ 
+    <div id="sidebox">
+      <input id ="EndTurn" type="submit" value="Run" onclick="submitGlobalVariable()">
+      <p id="output">The quick brown fox jumps over the lazy dog. </p>
     </div>
 
-     </div>
-     <div id="allCards"></div>
-  
+
+    <div id="cards_in_hand"></div>
+     
+    <div id="footer"> Powered by Refinery.io</div>
    </body>
    <script>
 url = "https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/programminglanguage"
 cardStack = []
 
 
-document.getElementById("allCards").style.width="1000";
+document.getElementById("cards_in_hand").style.width="1000";
 
 console.log("Total Width: " + screen.width);
 console.log("Total Height: " + screen.height);
-cardHeight = 220;
-cardWidth = 157.5;
+cardHeight = 20.3;
+cardWidth = 8.2;
 
 async function getCards(){
-  data = await fetchPost('',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/card");
+  data = await fetchPost('variable plus minus mul div',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/card");
   //console.log(data);
-  topPosition = 600;
+  topPosition = 56;
+  leftPosition = 2.5;
 
   for (i = 0, inc=0; i < data.length; i++, inc++){
     console.log(inc)
     var wrapper= document.createElement('div');
     wrapper.innerHTML= trim(data[i]);
     var div= wrapper.firstChild;
-    document.getElementById("allCards").appendChild(div);
-    leftPosition = (cardWidth+10)*inc;
-    if (leftPosition>1000){
-      leftPosition = "0px";
-      inc = -1;
-      topPosition=topPosition+cardHeight+10;
-    }
-    div.style.left = leftPosition+"px";
-    div.style.width = cardWidth+"px";
-    div.style.height = cardHeight+"px";
-    div.style.top = topPosition+"px";
+    document.getElementById("cards_in_hand").appendChild(div);
+
+    leftPosition = leftPosition + cardWidth+1;
+
+    div.style.left = leftPosition+"%";
+    div.style.width = cardWidth+"%";
+    div.style.height = cardHeight+"%";
+    div.style.top = topPosition+"%";
   }
 
   //document.getElementById('card').innerHTML = data)
-}
-
-
-
-function submitVariable(){
-  var value = document.getElementsByClassName('cardValue');
-  var i = cards.length
-  for(x=0; x<i; x++){
-      console.log(cards[x].value);
-  }
-
 }
 
 
@@ -140,17 +122,17 @@ firstPass = true;
 document.addEventListener('mousedown', function(e) {
   var cardsInPlay = document.getElementById("field").getElementsByClassName('card');
   len = cardsInPlay.length;
-  var cards = document.getElementById("allCards").getElementsByClassName('card');
+  var cards = document.getElementById("cards_in_hand").getElementsByClassName('card');
   isDown = true;
-  console.log(cardsInPlay);
   for (i=0;i<cards.length;i++){
     card=cards[i];
-    left = getInt(card.style.left);
-    right = left + getInt(card.style.width);
-    cTop = getInt(card.style.top);
-    bot = cTop + getInt(card.style.height);
-
+    left = card.offsetLeft;
+    right = left + card.offsetWidth;
+    cTop = card.offsetTop;
+    bot = cTop + card.offsetHeight;
+    console.log(card.style.width)
     if((e.clientX >= left && e.clientX<right)&&(e.clientY >= cTop && e.clientY<bot)){
+      console.log("card clicked");
       cardID = cards[i].id;
       if (firstPass){
         firstPass=false;
@@ -183,3 +165,6 @@ document.addEventListener('mousemove', function(event) {
 }, true);
    </script>
 </html>
+
+
+
