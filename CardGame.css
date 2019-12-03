@@ -1,24 +1,62 @@
-#allCards{
-  position: fixed;
-  border: 1px solid;
-  padding: 10px;
-  box-shadow: 1px 1px #c6bcb6;
-  margin: 5px;
+body{
   background-color: black;
-  overflow: hidden;
-  top: 600px;
-  width: 1000px;
-  height: 500px;
 }
-.field{
+#sidebox{
+  position: fixed;
+  top: 46%;
+  left: 84%;
+  height: 13%;
+  width: 12%;
+  border: 5px solid #FFB000;
+  color: white;
+}
+#output{
   position: reletive;
-  height: 880px;
-  border: 1px solid;
-  float: left;
+  color: #33FF00;
+  font-family: Geniva;
+  padding: 4px;
 }
-#cardTemp{
-  visibility: hidden;
-  z-index: 1;
+#EndTurn{
+  position: fixed;
+  cursor: pointer;
+  background-color: #4CAF50;
+  box-shadow: 0 2px #999;
+  font-size: 300%;
+  font-family: Geniva;
+  top: 40%;
+  left: 84%;
+  width: 12.5%;
+  height: 7%;
+
+}
+#EndTurn:hover{
+  background-color: #3e8e41;
+}
+#EndTurn:active{
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px); 
+}
+#cards_in_hand{
+  position: fixed;
+  top: 55%;
+  left: 2%;
+  width: 80%;
+  height: 40%;
+  background-color: #33FF33;
+}
+#field{
+  position: fixed;
+  top: 5%;
+  left: 2%;
+  width: 80%;
+  height: 40%;
+
+}
+#footer{
+  position: fixed;
+  top: 98%;
+  color: white
 }
 .card{
   position: fixed;
@@ -31,22 +69,11 @@
   margin: 5px;
   float:left;
 }
-.execute{
-  position: fixed;
-  top: 450px;
-  width: 1000px;
-  background-color: black;
-  border: 1px solid;
-  padding: 10px;
-  box-shadow: 1px 1px #c6bcb6;
-  margin: 5px;
-  color: white;
+#cardTemp{
+  visibility: hidden;
+  z-index: 1;
 }
 .card h1{
   text-align:center;
 }
-#stack:after{
-  content: "";
-  display: table;
-  clear: both;
-}
+
