@@ -76,4 +76,9 @@ body{
 .card h1{
   text-align:center;
 }
-
+a{
+  color: white;
+}
+a:link {
+  text-decoration: none;
+}
