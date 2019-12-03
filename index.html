@@ -11,20 +11,17 @@
  
     <div id="sidebox">
       <input id ="EndTurn" type="submit" value="Run" onclick="submitGlobalVariable()">
-      <p id="output">The quick brown fox jumps over the lazy dog. </p>
+      <p id="output">Code will be output here. </p>
     </div>
 
 
     <div id="cards_in_hand"></div>
      
-    <div id="footer"> Powered by Refinery.io</div>
+    <div id="footer"> <a href = "https://www.refinery.io/" target="_blank">Powered by Refinery.io</a></div>
    </body>
    <script>
 url = "https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/programminglanguage"
 cardStack = []
-
-
-document.getElementById("cards_in_hand").style.width="1000";
 
 console.log("Total Width: " + screen.width);
 console.log("Total Height: " + screen.height);
