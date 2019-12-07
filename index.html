@@ -5,14 +5,19 @@
       <link rel="stylesheet" type="text/css" href="CardGame.css">
    </head>
    <body class = "head" onload="getCards()">
+    <div id="solution">0</div>
     <div id="field">
        <div id="cardTemp" class="card" style="left: 0px; width: 315px; height: 440px; top: 0px;"></div>
     </div>
  
     <div id="sidebox">
-      <input id ="EndTurn" type="submit" value="Run" onclick="submitGlobalVariable()">
+      <input id ="EndTurn" type="submit" value="Run" onclick="run()">
       <p id="output">Code will be output here. </p>
     </div>
+
+ 
+     <input id ="resetField" type="submit" value="Reset" onclick="removeFieldCards()">
+
 
 
     <div id="cards_in_hand"></div>
@@ -27,21 +32,39 @@ console.log("Total Width: " + screen.width);
 console.log("Total Height: " + screen.height);
 cardHeight = 20.3;
 cardWidth = 8.2;
+var solution = 0;
+
+async function getSolutions(){
+  data = await fetchPost('',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/solutions");
+  console.log(data);
+
+  c1 = data[0];
+  c2= data[3];
+  v = data[1];
+  op = data [2];
+
+  solution = c1;
+  document.getElementById("solution").innerHTML = solution;
+}
 
 async function getCards(){
-  data = await fetchPost('variable plus minus mul div',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/card");
+  getSolutions();
+  //VAR IF THEN ELSE gets
+  data = await fetchPost('p2 p3 p4 plus minus mul POW LP RP',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/card");
   //console.log(data);
   topPosition = 56;
   leftPosition = 2.5;
 
-  for (i = 0, inc=0; i < data.length; i++, inc++){
-    console.log(inc)
+  for (i = 0; i < data.length; i++){
     var wrapper= document.createElement('div');
     wrapper.innerHTML= trim(data[i]);
     var div= wrapper.firstChild;
     document.getElementById("cards_in_hand").appendChild(div);
 
-    leftPosition = leftPosition + cardWidth+1;
+    leftPosition = leftPosition + cardWidth+.5;
+    if (i==0){
+      leftPosition = 2.5;
+    }
 
     div.style.left = leftPosition+"%";
     div.style.width = cardWidth+"%";
@@ -53,7 +76,7 @@ async function getCards(){
 }
 
 
-function submitGlobalVariable(){
+async function run(){
   var cards = document.getElementById('field').getElementsByClassName('cardValue');
   var i = cards.length
   var data = ""
@@ -65,9 +88,25 @@ function submitGlobalVariable(){
         data = data + trim(cards[x].value) + " ";
       }
   }
-  console.log(data);
-  fetchPost([data], url)
-    .then(data => document.getElementById('output').innerHTML = data);
+  data = await fetchPost([data], url)
+
+  if (data == solution){
+    document.getElementById('output').innerHTML = data+" is correct!";
+    removeFieldCards();
+    getSolutions();
+  }
+  else{
+    document.getElementById('output').innerHTML = data;
+  }
+}
+
+function removeFieldCards(){
+  e = document.getElementById('field');
+    child = e.lastElementChild;  
+    while (child) { 
+      e.removeChild(child); 
+      child = e.lastElementChild; 
+    }
 }
 
 function trim(s){ 
@@ -85,8 +124,6 @@ function fetchPost(data, url) {
   }).then(response => response.json());   
 }
 
-
-
 function getInt(text){
   var matches = text.match(/(\d+)/);
   if (matches){
@@ -94,17 +131,17 @@ function getInt(text){
   }
 }
 
-function addNewCard(cardID, len){
+function addNewCard(cardID, len, t){
   console.log(cardID +' Clicked');
   div = document.getElementById(cardID);
   //console.log(div);
   newDiv = div.cloneNode(true);
   newDiv.setAttribute("id", "card"+len);
 
-  newDiv.style.left = (330*len)+"px";
-  newDiv.style.width = "315px";
-  newDiv.style.height = "440px";
-  newDiv.style.top = "0px";
+  newDiv.style.left = (170*len)+"px";
+  newDiv.style.width = "157px";
+  newDiv.style.height = "220px";
+  newDiv.style.top = t+"px";
 
   document.getElementById('field').appendChild(newDiv);
 }
@@ -137,7 +174,7 @@ document.addEventListener('mousedown', function(e) {
         elem.parentNode.removeChild(elem);
         len--;
       }
-      addNewCard(cardID, len);
+      addNewCard(cardID, len, 0);
     }
   }
   //console.log(e.clientX, e.clientY);
