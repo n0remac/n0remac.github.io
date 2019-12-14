@@ -12,6 +12,7 @@ body{
   top: 7%;
   left: 84%;
   width: 12%;
+  z-index: -5;
 }
 #sidebox{
   position: fixed;
@@ -20,12 +21,14 @@ body{
   height: 13%;
   width: 12%;
   border: 5px solid #FFB000;
+  z-index: -5;
 }
 #output{
   position: reletive;
   color: #33FF00;
   font-family: Geniva;
   padding: 4px;
+  z-index: -5;
 }
 #EndTurn{
   position: fixed;
@@ -38,6 +41,7 @@ body{
   left: 84%;
   width: 12.5%;
   height: 7%;
+  z-index: -5;
 }
 #EndTurn:hover{
   background-color: #3e8e41;
@@ -58,6 +62,7 @@ body{
   left: 84%;
   width: 12.5%;
   height: 7%;
+  z-index: -5;
 }
 #resetField:hover{
   background-color: #3e8e41;
@@ -76,6 +81,7 @@ body{
   width: 80%;
   height: 40%;
   background-color: #33FF33;
+  z-index: -5;
 }
 #field{
   position: fixed;
