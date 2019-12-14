@@ -6,9 +6,7 @@
    </head>
    <body class = "head" onload="getCards()">
     <div id="solution">0</div>
-    <div id="field">
-       <div id="cardTemp" class="card" style="left: 0px; width: 315px; height: 440px; top: 0px;"></div>
-    </div>
+    <div id="field" class="container"></div>
  
     <div id="sidebox">
       <input id ="EndTurn" type="submit" value="Run" onclick="run()">
@@ -16,27 +14,29 @@
     </div>
 
  
-     <input id ="resetField" type="submit" value="Reset" onclick="removeFieldCards()">
+     <input id ="resetField" type="submit" value="Reset" onclick="removeAllCards()">
 
 
 
-    <div id="cards_in_hand"></div>
+    <div id="cards_in_hand" class="container"></div>
      
     <div id="footer"> <a href = "https://www.refinery.io/" target="_blank">Powered by Refinery.io</a></div>
    </body>
    <script>
-url = "https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/programminglanguage"
-cardStack = []
 
-console.log("Total Width: " + screen.width);
-console.log("Total Height: " + screen.height);
-cardHeight = 20.3;
-cardWidth = 8.2;
+
+
+url = "https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/programminglanguage"
+
+//console.log("Total Width: " + screen.width);
+//console.log("Total Height: " + screen.height);
+cardHeight = 220;
+cardWidth = 157;
 var solution = 0;
 
 async function getSolutions(){
   data = await fetchPost('',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/solutions");
-  console.log(data);
+  //console.log(data);
 
   c1 = data[0];
   c2= data[3];
@@ -49,27 +49,22 @@ async function getSolutions(){
 
 async function getCards(){
   getSolutions();
+  containerList=document.body.getElementsByClassName('container');
   //VAR IF THEN ELSE gets
-  data = await fetchPost('p2 p3 p4 plus minus mul POW LP RP',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/card");
+  data = await fetchPost('p2 p3 p4 p5 p6 plus minus mul POW',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/card");
   //console.log(data);
-  topPosition = 56;
-  leftPosition = 2.5;
+  topPosition = 0;
+  leftPosition = 0;
 
   for (i = 0; i < data.length; i++){
-    var wrapper= document.createElement('div');
+    var wrapper = document.createElement('div');
     wrapper.innerHTML= trim(data[i]);
-    var div= wrapper.firstChild;
-    document.getElementById("cards_in_hand").appendChild(div);
-
-    leftPosition = leftPosition + cardWidth+.5;
-    if (i==0){
-      leftPosition = 2.5;
-    }
-
-    div.style.left = leftPosition+"%";
-    div.style.width = cardWidth+"%";
-    div.style.height = cardHeight+"%";
-    div.style.top = topPosition+"%";
+    var div = wrapper.firstChild;
+    parent = "cards_in_hand";
+    parent = document.getElementById(parent);
+    
+    addToContainer(div, parent);
+    cardList.push(div);
   }
 
   //document.getElementById('card').innerHTML = data)
@@ -92,7 +87,7 @@ async function run(){
 
   if (data == solution){
     document.getElementById('output').innerHTML = data+" is correct!";
-    removeFieldCards();
+    removeAllCards();
     getSolutions();
   }
   else{
@@ -100,13 +95,20 @@ async function run(){
   }
 }
 
-function removeFieldCards(){
+function removeAllCards(){
   e = document.getElementById('field');
-    child = e.lastElementChild;  
-    while (child) { 
-      e.removeChild(child); 
-      child = e.lastElementChild; 
-    }
+  child = e.lastElementChild;  
+  while (child) { 
+    e.removeChild(child); 
+    child = e.lastElementChild; 
+  }
+  c = document.getElementById('cards_in_hand');
+  child = c.lastElementChild;  
+  while (child) { 
+    c.removeChild(child); 
+    child = c.lastElementChild; 
+  }
+  getCards();
 }
 
 function trim(s){ 
@@ -124,12 +126,183 @@ function fetchPost(data, url) {
   }).then(response => response.json());   
 }
 
-function getInt(text){
-  var matches = text.match(/(\d+)/);
-  if (matches){
-    return (parseInt(matches[0], 10));
+function  clean(s){
+  return Number(s.split('px')[0]);
+}
+
+//used to move cards around the screen
+function moveCards(e){
+  for (c in cardList){
+    card = cardList[c];
+    left = clean(card.style.left);
+    right = left + clean(card.style.width);
+    cTop = clean(card.style.top);
+    bot = cTop + clean(card.style.height);
+
+    cardStyle = document.defaultView.getComputedStyle(card, "");
+    
+
+    //console.log((e.clientX >= left && e.clientX<right)&&(e.clientY >= cTop && e.clientY<bot));
+    if((e.clientX >= left && e.clientX<right)&&(e.clientY >= cTop && e.clientY<bot)){
+      offset[0] = e.clientX - left;
+      offset[1] = e.clientY - cTop;
+      originalLoc[0] = left;
+      originalLoc[1] = cTop;
+      heldCard = card;
+      heldCard.style.zIndex = 10;
+      break;
+    }
   }
 }
+
+function addToContainer(div, container){
+  if (div.parentElement.id == container.id){
+    div.style.left = originalLoc[0] + "px";
+    div.style.top = originalLoc[1] + "px";
+  }
+  else{
+    //console.log(container);
+    container.appendChild(div);
+    parentStyle = document.defaultView.getComputedStyle(container, "");
+
+    parLeft = clean(parentStyle.left);
+    parRight = parLeft + clean(parentStyle.width);
+    parTop = clean(parentStyle.top);
+    parBot = parTop + clean(parentStyle.height);
+    cards = container.childNodes;
+    cardNum = cards.length;
+
+    div.style.left = parLeft+1+(cardWidth + 5) * (cardNum - 1)+"px";
+    div.style.width = cardWidth + "px";
+    div.style.height = cardHeight + "px";
+    div.style.top = parTop + "px";
+  }
+}
+
+function isInContainer(div, container){
+
+  divStyle = document.defaultView.getComputedStyle(div, "");
+  dLeft = clean(divStyle.left);
+  dRight = dLeft + clean(divStyle.width);
+  dTop = clean(divStyle.top);
+  dBot = dTop + clean(divStyle.height);
+
+  x = (dLeft + dRight) / 2;
+  y = (dTop + dBot) / 2;
+
+  containerStyle = document.defaultView.getComputedStyle(container, "");
+  cLeft = clean(containerStyle.left);
+  cRight = cLeft + clean(containerStyle.width);
+  cTop = clean(containerStyle.top);
+  cBot = cTop + clean(containerStyle.height);
+
+  //console.log(container);
+  //console.log(cLeft, cRight, cTop, cBot, x, y);
+
+  if(x>=cLeft&&x<=cRight&&y>=cTop&&y<=cBot){
+    return true;
+  }
+  return false;
+}
+
+var offset = [0,0];
+var originalLoc = [0,0];
+isDown = false;
+firstPass = true;
+var heldCard = '';
+cardList = [];
+containerList = [];
+
+document.addEventListener('mousedown', function(e) {
+  isDown = true;
+  //console.log(e.clientX, e.clientY)
+  moveCards(e)
+}, true);
+
+document.addEventListener('mouseup', function(e) {
+  //console.log(heldCard.id);
+  if(heldCard!=''){ 
+    for (i = 0; i < containerList.length; i++){
+      container = document.getElementById(containerList[i].id);
+
+      if(isInContainer(heldCard, container)){
+        addToContainer(heldCard, container);
+      }
+    }
+      heldCard.style.zIndex = 0;
+      heldCard = '';
+      offset = [0,0];
+      isDown = false;
+  }
+}, true);
+
+document.addEventListener('mousemove', function(event) {
+    event.preventDefault();
+    if (isDown) {
+        mousePosition = {
+            x : event.clientX,
+            y : event.clientY
+        };
+      if (heldCard != ''){
+        //console.log(heldCard);
+
+        heldCard.style.top = mousePosition['y'] - offset[1]+"px";
+        heldCard.style.left = mousePosition['x'] - offset[0]+"px";
+      }
+    }
+}, true);
+   </script>
+</html>
+
+<!--
+
+
+
+
+
+
+//used to move cards around the screen
+function moveCards(e){
+  var cards = document.getElementsByClassName('card');
+  for (i=0;i<cards.length;i++){
+    card=cards[i];
+    left = card.offsetLeft;
+    right = left + card.offsetWidth;
+    cTop = card.offsetTop;
+    bot = cTop + card.offsetHeight;
+    console.log(left, right, cTop, bot)
+    if((e.clientX >= left && e.clientX<right)&&(e.clientY >= cTop && e.clientY<bot)){
+      cardID = cards[i].id;
+      heldCard = cardID;
+      console.log(heldCard)
+    }
+  }
+}
+
+
+
+
+//instantly moves card from green to field
+function handToField(e){
+  var cardsInPlay = document.getElementById("field").getElementsByClassName('card');
+  len = cardsInPlay.length;
+  var cards = document.getElementById("cards_in_hand").getElementsByClassName('card');
+  
+  for (i=0;i<cards.length;i++){
+    card=cards[i];
+    left = card.offsetLeft;
+    right = left + card.offsetWidth;
+    cTop = card.offsetTop;
+    bot = cTop + card.offsetHeight;
+    console.log(card.style.width)
+    if((e.clientX >= left && e.clientX<right)&&(e.clientY >= cTop && e.clientY<bot)){
+      console.log("card clicked");
+      cardID = cards[i].id;
+      addNewCard(cardID, len, 0);
+    }
+  }
+}
+
 
 function addNewCard(cardID, len, t){
   console.log(cardID +' Clicked');
@@ -147,58 +320,11 @@ function addNewCard(cardID, len, t){
 }
 
 
-
-
-isDown = false;
-firstPass = true;
-
-
-document.addEventListener('mousedown', function(e) {
-  var cardsInPlay = document.getElementById("field").getElementsByClassName('card');
-  len = cardsInPlay.length;
-  var cards = document.getElementById("cards_in_hand").getElementsByClassName('card');
-  isDown = true;
-  for (i=0;i<cards.length;i++){
-    card=cards[i];
-    left = card.offsetLeft;
-    right = left + card.offsetWidth;
-    cTop = card.offsetTop;
-    bot = cTop + card.offsetHeight;
-    console.log(card.style.width)
-    if((e.clientX >= left && e.clientX<right)&&(e.clientY >= cTop && e.clientY<bot)){
-      console.log("card clicked");
-      cardID = cards[i].id;
-      if (firstPass){
-        firstPass=false;
-        var elem = document.getElementById('cardTemp');
-        elem.parentNode.removeChild(elem);
-        len--;
-      }
-      addNewCard(cardID, len, 0);
-    }
+function getInt(text){
+  var matches = text.match(/(\d+)/);
+  if (matches){
+    return (parseInt(matches[0], 10));
   }
-  //console.log(e.clientX, e.clientY);
-}, true);
-
-document.addEventListener('mouseup', function() {
-    isDown = false;
-}, true);
-
-document.addEventListener('mousemove', function(event) {
-        
-    event.preventDefault();
-    if (isDown) {
-        mousePosition = {
-    
-            x : event.clientX,
-            y : event.clientY
-        };
-        //console.log(mousePosition)
-    }
-    
-}, true);
-   </script>
-</html>
-
-
+}
+-->
 
