@@ -4,7 +4,7 @@
       <title>Cards</title>
       <link rel="stylesheet" type="text/css" href="CardGame.css">
    </head>
-   <body class = "head" onload="getCards()">
+   <body class = "head" onload="init()">
     <div id="solution">0</div>
     <div id="field" class="container"></div>
  
@@ -33,6 +33,22 @@ url = "https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/programmi
 cardHeight = 220;
 cardWidth = 157;
 var solution = 0;
+var offset = [0,0];
+var originalLoc = [0,0];
+isDown = false;
+firstPass = true;
+var heldCard = '';
+var cardList = [];
+var containerList = [];
+
+
+async function init(){
+  getSolutions();
+  await getCards();
+  placeHolder();
+  addCardsToHand();
+  
+}
 
 async function getSolutions(){
   data = await fetchPost('',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/solutions");
@@ -47,11 +63,20 @@ async function getSolutions(){
   document.getElementById("solution").innerHTML = solution;
 }
 
+function addCardsToHand(){
+  parent = document.getElementById("cards_in_hand");
+  for (i = 0; i < cardList.length; i++){
+    div = cardList[i];
+    if (div.id!='blank'){
+      addToContainer(div, parent);
+    }
+  }
+}
+
 async function getCards(){
-  getSolutions();
-  containerList=document.body.getElementsByClassName('container');
+  cardList = [];
   //VAR IF THEN ELSE gets
-  data = await fetchPost('p2 p3 p4 p5 p6 plus minus mul POW',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/card");
+  data = await fetchPost('blank p2 p3 p4 p5 p6 minus plus mul POW',"https://sgp5y79yog.execute-api.us-west-2.amazonaws.com/refinery/card");
   //console.log(data);
   topPosition = 0;
   leftPosition = 0;
@@ -60,14 +85,8 @@ async function getCards(){
     var wrapper = document.createElement('div');
     wrapper.innerHTML= trim(data[i]);
     var div = wrapper.firstChild;
-    parent = "cards_in_hand";
-    parent = document.getElementById(parent);
-    
-    addToContainer(div, parent);
     cardList.push(div);
   }
-
-  //document.getElementById('card').innerHTML = data)
 }
 
 
@@ -83,6 +102,7 @@ async function run(){
         data = data + trim(cards[x].value) + " ";
       }
   }
+  //console.log(data);
   data = await fetchPost([data], url)
 
   if (data == solution){
@@ -108,11 +128,12 @@ function removeAllCards(){
     c.removeChild(child); 
     child = c.lastElementChild; 
   }
-  getCards();
+  init();
 }
 
 function trim(s){ 
-  return ( s || '' ).replace( /^\s+|\s+$/g, '' ); 
+  ret =  ( s || '' ).replace( /^\s+|\s+$/g, '' ); 
+  return ret.replace(/(\r\n|\n|\r)/gm, "");
 }
 
 
@@ -140,7 +161,6 @@ function moveCards(e){
     bot = cTop + clean(card.style.height);
 
     cardStyle = document.defaultView.getComputedStyle(card, "");
-    
 
     //console.log((e.clientX >= left && e.clientX<right)&&(e.clientY >= cTop && e.clientY<bot));
     if((e.clientX >= left && e.clientX<right)&&(e.clientY >= cTop && e.clientY<bot)){
@@ -155,27 +175,145 @@ function moveCards(e){
   }
 }
 
-function addToContainer(div, container){
-  if (div.parentElement.id == container.id){
-    div.style.left = originalLoc[0] + "px";
-    div.style.top = originalLoc[1] + "px";
-  }
-  else{
-    //console.log(container);
-    container.appendChild(div);
-    parentStyle = document.defaultView.getComputedStyle(container, "");
+function setContainerList(){
+  containerList = document.body.getElementsByClassName('container');
+}
 
-    parLeft = clean(parentStyle.left);
-    parRight = parLeft + clean(parentStyle.width);
-    parTop = clean(parentStyle.top);
-    parBot = parTop + clean(parentStyle.height);
+function placeHolder(){
+  setContainerList();
+  //console.log(containerList);
+  for (i = 0; i < containerList.length; i++){
+
+      container = containerList[i];
+      if (container.className.includes('blank')){
+      }
+      else{
+        containerPlaceHolder(container);
+      }
+      //console.log(i)
+    }
+}
+
+function containerPlaceHolder(container){
+  div = cardList[0];
+  j = 0;
+  containerStyle = document.defaultView.getComputedStyle(container, "");
+  width = clean(containerStyle.width);
+  //console.log(width);
+  while(j < width - cardWidth){
+    clone = div.cloneNode(true);
+    clone.id = container.id + j;
+    //console.log(clone);
+    addToContainer(clone, container);
+    j = j + cardWidth+5;
+    //console.log(i);
+  }
+}
+
+function findBlankSpot(container){
+  spots = container.getElementsByClassName('blank');
+  for (s = 0; s < spots.length; s++){
+    //console.log('==========++=========');
+    card = spots[s].getElementsByClassName('card');
+    if (card.length == 0 && spots[s].parentElement == container){
+      spots[s].style.opacity = 1;
+      return spots[s];
+    }
+  }
+}
+
+function addAt(div, container, l, t){
+  container.appendChild(div);
+  div.style.left = l;
+  div.style.top = t;
+  div.style.width = cardWidth + "px";
+  div.style.height = cardHeight + "px";
+}
+
+function add(div, container){
+  //adding a blank card spot to the screen. placed at beginning
+  if(div.className.includes('blank')){
+    container.appendChild(div);
+    containerStyle = document.defaultView.getComputedStyle(container, "");
+    parLeft = clean(containerStyle.left);
+    parRight = parLeft + clean(containerStyle.width);
+    parTop = clean(containerStyle.top);
+    parBot = parTop + clean(containerStyle.height);
     cards = container.childNodes;
     cardNum = cards.length;
 
-    div.style.left = parLeft+1+(cardWidth + 5) * (cardNum - 1)+"px";
-    div.style.width = cardWidth + "px";
-    div.style.height = cardHeight + "px";
-    div.style.top = parTop + "px";
+    addAt(div, container, parLeft+1+(cardWidth + 5) * (cardNum - 1)+"px", parTop + "px");
+  }
+  else{
+    
+    if (container.className.includes('split')){
+      console.log(container);
+      cardVal = div.getElementsByClassName('cardValue')[0].innerHTML;
+      cardVal = trim(cardVal);
+      containerVal = container.getElementsByClassName('cardValue')[0].innerHTML;
+      containerVal = trim(containerVal);
+
+      if(containerVal.includes('+')){
+        conValList = containerVal.split('+');
+      }
+      else if(containerVal.includes('-')){
+        conValList = containerVal.split('-');
+      }
+      else if(containerVal.includes('*')){
+        conValList = containerVal.split('*');
+      }
+      else if(containerVal.includes('/')){
+        conValList = containerVal.split('/');
+      }
+
+      if (conValList[0] == ""){
+        newVal = cardVal+containerVal;
+        container.getElementsByClassName('cardValue')[0].innerHTML = newVal;
+        div.parentNode.removeChild(div);
+        removeCard(div);
+      }
+      else if(conValList[1] == ""){
+        newVal = containerVal + cardVal;
+        container.getElementsByClassName('cardValue')[0].innerHTML = newVal;
+        div.parentNode.removeChild(div);
+        removeCard(div);
+      }
+      else{
+        returnToOriginalLocation(div);
+      }
+
+      
+    }
+    //used to snap a card into place in a container.
+    else {
+      //console.log(container);
+      spot = findBlankSpot(container);
+      addAt(div, spot, spot.style.left, spot.style.top);
+    }
+    
+  }
+  
+}
+
+function removeCard(div){
+  //console.log(cardList);
+
+  cardList = cardList.filter(item => item !== div);
+  //console.log(cardList);
+}
+
+function returnToOriginalLocation(div){
+    div.style.left = originalLoc[0] + "px";
+    div.style.top = originalLoc[1] + "px";
+}
+
+function addToContainer(div, container){
+
+  if (div.parentElement != null && div.parentElement.id != "" && div.parentElement.parentElement.id == container.id){
+    returnToOriginalLocation(div);
+  }
+  else{
+    add(div, container);
   }
 }
 
@@ -205,28 +343,58 @@ function isInContainer(div, container){
   return false;
 }
 
-var offset = [0,0];
-var originalLoc = [0,0];
-isDown = false;
-firstPass = true;
-var heldCard = '';
-cardList = [];
-containerList = [];
-
 document.addEventListener('mousedown', function(e) {
   isDown = true;
-  //console.log(e.clientX, e.clientY)
+  //console.log(cardList)
   moveCards(e)
+  //console.log(heldCard);
 }, true);
 
+//For the love of dog fix this.
 document.addEventListener('mouseup', function(e) {
+  //containerList = document.body.getElementsByClassName('container');
   //console.log(heldCard.id);
   if(heldCard!=''){ 
-    for (i = 0; i < containerList.length; i++){
-      container = document.getElementById(containerList[i].id);
-
-      if(isInContainer(heldCard, container)){
-        addToContainer(heldCard, container);
+    done = false;
+    if(!heldCard.className.includes('split')){
+      for (i = 0; i < containerList.length; i++){
+        container = document.getElementById(containerList[i].id);
+        if (container.className.includes('split')){
+          if(isInContainer(heldCard, container) && !done){
+              //console.log("======================");
+              addToContainer(heldCard, container);
+              done = true;
+              //console.log(heldCard.id);
+          }
+        }
+      }
+    }
+    else{
+      done = true;
+      for (i = 0; i < containerList.length; i++){
+        container = document.getElementById(containerList[i].id);
+        if(isInContainer(heldCard, container) && heldCard!=container){
+          //console.log(heldCard == container);
+          //console.log(container);
+          //console.log(containerList);
+          addToContainer(heldCard, container);
+          //console.log(containerList);
+          break;
+          //console.log('----------------------------');
+        }
+      }
+    }   
+    if(!done){
+      for (i = 0; i < containerList.length; i++){
+        container = document.getElementById(containerList[i].id);
+        if (container.className.includes('blank')){
+        }
+        else{
+          if(isInContainer(heldCard, container)){
+            //console.log(container);
+            addToContainer(heldCard, container);
+          }
+        }
       }
     }
       heldCard.style.zIndex = 0;
@@ -245,7 +413,7 @@ document.addEventListener('mousemove', function(event) {
         };
       if (heldCard != ''){
         //console.log(heldCard);
-
+        heldCard.parentElement.style.opacity = .3;
         heldCard.style.top = mousePosition['y'] - offset[1]+"px";
         heldCard.style.left = mousePosition['x'] - offset[0]+"px";
       }
@@ -256,10 +424,20 @@ document.addEventListener('mousemove', function(event) {
 
 <!--
 
+    //adding a new blank
+  par = div.parentElement;
+  clone = cardList[0].cloneNode(true);
+  clone.id = par.id+div.style.left;
+  addAt(clone, par, originalLoc[0]+"px", originalLoc[1]+"px");
 
 
-
-
+    if(div.className.includes('blank')){
+    addAt(div, container, parLeft+1+(cardWidth + 5) * (cardNum - 1)+"px", parTop + "px");
+  }
+  else{
+    spots = findBlankSpot(container);
+    addAt(div, container, spots[0], spots[1]);
+  }
 
 //used to move cards around the screen
 function moveCards(e){
@@ -278,9 +456,6 @@ function moveCards(e){
     }
   }
 }
-
-
-
 
 //instantly moves card from green to field
 function handToField(e){
@@ -303,7 +478,6 @@ function handToField(e){
   }
 }
 
-
 function addNewCard(cardID, len, t){
   console.log(cardID +' Clicked');
   div = document.getElementById(cardID);
@@ -318,7 +492,6 @@ function addNewCard(cardID, len, t){
 
   document.getElementById('field').appendChild(newDiv);
 }
-
 
 function getInt(text){
   var matches = text.match(/(\d+)/);
