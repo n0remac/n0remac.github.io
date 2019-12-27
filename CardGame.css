@@ -96,6 +96,9 @@ body{
   top: 98%;
   color: white
 }
+.blank{
+  opacity: 0.3;
+}
 .card{
   position: fixed;
   background-color: #e0e2e4;
